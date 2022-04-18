@@ -1,4 +1,5 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, globalShortcut } from 'electron';
+import { url } from './config';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -12,15 +13,20 @@ let mainWindow;
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 640,
+    height: 420,
+    alwaysOnTop: true,
+    titleBarStyle: 'hidden',
+    autoHideMenuBar: true,
+    webPreferences:{
+      nodeIntegration: true
+    }
   });
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL(`http://${url}`);
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -31,10 +37,17 @@ const createWindow = () => {
   });
 };
 
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.whenReady().then(() => {
+  //keyboard shortcut
+  globalShortcut.register('Control+J', () =>{
+      // Open the DevTools.
+  mainWindow.webContents.openDevTools();
+  })
+}).then(createWindow);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
